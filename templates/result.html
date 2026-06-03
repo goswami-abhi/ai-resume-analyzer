@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+
+{% block title %}Analysis Results - CVision{% endblock %}
+
+{% block content %}
+<div class="result-container" style="animation: fadeIn 0.6s ease-out;">
+    
+    <!-- Top Action Row -->
+    <div class="result-header">
+        <div>
+            <h1 style="font-size: 2rem; margin-bottom: 5px;">Analysis for <span class="gradient-text">{{ resume.filename }}</span></h1>
+            <p style="margin-bottom: 0; font-size: 0.95rem;">Created on {{ resume.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <a href="/dashboard" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Dashboard</a>
+            <a href="/download_pdf/{{ resume._id }}" class="btn btn-primary"><i class="fa-solid fa-file-pdf"></i> Download PDF Report</a>
+        </div>
+    </div>
+
+    <!-- Main Results Grid -->
+    <div class="result-grid">
+        
+        <!-- Left Side: Score Gauges & Metadata -->
+        <div style="display: flex; flex-direction: column; gap: 2rem;">
+            <!-- Score Panel -->
+            <div class="glass-panel score-panel">
+                <div class="chart-container">
+                    <canvas id="atsChart"></canvas>
+                    <div class="score-text">
+                        <div class="score-num" id="atsScoreValue">{{ resume.ats_score }}</div>
+                        <div class="score-label">ATS Score</div>
+                    </div>
+                </div>
+                
+                <h3 style="font-size: 1.25rem;">
+                    {% if resume.ats_score >= 80 %}
+                        <span style="color: var(--success);"><i class="fa-solid fa-circle-check"></i> Highly Compatible</span>
+                    {% elif resume.ats_score >= 60 %}
+                        <span style="color: var(--warning);"><i class="fa-solid fa-triangle-exclamation"></i> Action Required</span>
+                    {% else %}
+                        <span style="color: var(--danger);"><i class="fa-solid fa-circle-xmark"></i> Incompatible Structure</span>
+                    {% endif %}
+                </h3>
+                <p style="font-size: 0.85rem; margin-top: 5px; margin-bottom: 0;">Compatibility matches industry ATS keywords and syntax rules.</p>
+            </div>
+            
+            <!-- Metadata Panel -->
+            <div class="glass-panel">
+                <h3 style="font-size: 1.1rem; margin-bottom: 15px;"><i class="fa-solid fa-info-circle"></i> Analysis Settings</h3>
+                <ul style="list-style: none; font-size: 0.9rem; display: flex; flex-direction: column; gap: 10px;">
+                    <li style="display: flex; justify-content: space-between;">
+                        <span style="color: var(--text-secondary);">Target Profile:</span>
+                        <span style="font-weight: 600;">
+                            {% if resume.job_description %}Job Specific{% else %}General Standards{% endif %}
+                        </span>
+                    </li>
+                    {% if resume.job_description %}
+                        <li style="flex-direction: column; gap: 5px; border-top: 1px solid var(--border-color); padding-top: 10px; display: flex;">
+                            <span style="color: var(--text-secondary);">Job Description:</span>
+                            <span style="font-size: 0.8rem; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-secondary); padding: 8px; border-radius: 6px; max-height: 120px; overflow-y: auto; white-space: pre-wrap; line-height: 1.4;">{{ resume.job_description }}</span>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Right Side: Detailed Feedback and AI Assistant -->
+        <div style="display: flex; flex-direction: column; gap: 2rem;">
+            
+            <!-- Analysis Details Tabs -->
+            <div class="glass-panel">
+                <div class="tabs-nav">
+                    <button class="tab-btn active" onclick="switchTab(event, 'overview')">Overview & Profile</button>
+                    <button class="tab-btn" onclick="switchTab(event, 'missing-skills')">Missing Skills</button>
+                    <button class="tab-btn" onclick="switchTab(event, 'improvements')">Action Plan</button>
+                    <button class="tab-btn" onclick="switchTab(event, 'skill-gap')">Skill Gap Table</button>
+                    <button class="tab-btn" onclick="switchTab(event, 'career')">Career Pathing</button>
+                </div>
+                
+                <!-- Tab: Overview -->
+                <div id="overview" class="tab-content active">
+                    <h3 style="font-size: 1.2rem; margin-bottom: 12px;">Candidate Profile Summary</h3>
+                    <p style="font-size: 0.95rem; line-height: 1.7; margin-bottom: 2rem; color: var(--text-primary);">{{ resume.analysis.summary }}</p>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+                        <div>
+                            <h4 style="color: var(--success); font-size: 1.05rem; margin-bottom: 12px;"><i class="fa-solid fa-circle-check"></i> Core Strengths</h4>
+                            <ul class="bullet-list strengths-list">
+                                {% for strg in resume.analysis.strengths %}
+                                    <li>{{ strg }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 style="color: var(--danger); font-size: 1.05rem; margin-bottom: 12px;"><i class="fa-solid fa-circle-xmark"></i> Structural Weaknesses</h4>
+                            <ul class="bullet-list weaknesses-list">
+                                {% for weak in resume.analysis.weaknesses %}
+                                    <li>{{ weak }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tab: Missing Skills -->
+                <div id="missing-skills" class="tab-content">
+                    <h3 style="font-size: 1.2rem; margin-bottom: 12px;">Identified Skill Deficiencies</h3>
+                    <p>These key technical tools, methodologies, and framework requirements are missing from your resume context, making it less searchable for candidate parsing applications.</p>
+                    
+                    <div class="skills-flex" style="margin-top: 1.5rem;">
+                        {% for skill in resume.analysis.missing_skills %}
+                            <span class="skill-tag missing"><i class="fa-solid fa-triangle-exclamation"></i> {{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Tab: Improvements -->
+                <div id="improvements" class="tab-content">
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="font-size: 1.2rem; margin-bottom: 12px;"><i class="fa-solid fa-lightbulb" style="color: var(--warning);"></i> Recommendations</h3>
+                        <ul class="bullet-list improvements-list">
+                            {% for imp in resume.analysis.resume_improvements %}
+                                <li>{{ imp }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    
+                    {% if resume.analysis.grammar_suggestions %}
+                    <div>
+                        <h3 style="font-size: 1.2rem; margin-bottom: 12px;"><i class="fa-solid fa-spell-check" style="color: var(--secondary);"></i> Tone & Grammar Enhancements</h3>
+                        <ul class="bullet-list">
+                            {% for gram in resume.analysis.grammar_suggestions %}
+                                <li>{{ gram }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Tab: Skill Gap Table -->
+                <div id="skill-gap" class="tab-content">
+                    <h3 style="font-size: 1.2rem; margin-bottom: 12px;">Skill Alignment & Gap Matrix</h3>
+                    <p>Core skill coverage comparison indicating target importance and presence within the parsed resume.</p>
+                    
+                    <table class="gap-table">
+                        <thead>
+                            <tr>
+                                <th>Skill Name</th>
+                                <th>Status</th>
+                                <th>Priority</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in resume.analysis.skill_gap_analysis %}
+                                <tr>
+                                    <td style="font-weight: 600;">{{ row.skill }}</td>
+                                    <td>
+                                        {% if row.status.lower() == 'present' %}
+                                            <span style="color: var(--success); font-weight: bold;"><i class="fa-solid fa-check"></i> Found</span>
+                                        {% else %}
+                                            <span style="color: var(--danger); font-weight: bold;"><i class="fa-solid fa-x"></i> Missing</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if row.importance.lower() == 'high' %}
+                                            <span class="badge badge-low">High Priority</span>
+                                        {% elif row.importance.lower() == 'medium' %}
+                                            <span class="badge badge-mid">Medium Priority</span>
+                                        {% else %}
+                                            <span class="badge badge-high">Low Priority</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Tab: Career Roles -->
+                <div id="career" class="tab-content">
+                    <h3 style="font-size: 1.2rem; margin-bottom: 12px;">Suited Career Tracks</h3>
+                    <p>Based on parsed experiences and core projects, these positions are the best fits for your profile:</p>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+                        {% for role in resume.analysis.best_career_roles %}
+                            <div class="glass-card" style="text-align: center; padding: 20px;">
+                                <div style="font-size: 1.5rem; color: var(--secondary); margin-bottom: 10px;"><i class="fa-solid fa-briefcase"></i></div>
+                                <h4 style="font-size: 1rem; margin-bottom: 0;">{{ role }}</h4>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chatbot Assist Container -->
+            <div class="glass-panel chatbot-panel">
+                <h3 style="font-size: 1.2rem; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-comments" style="color: var(--primary);"></i>
+                    CVision Coaching Assistant
+                </h3>
+                
+                <!-- Chat Bubbles -->
+                <div class="chatbot-messages" id="chatbot-messages">
+                    <div class="chat-bubble assistant">
+                        Hello! I am your career coach. Ask me questions about your resume, suggestions, how to frame accomplishments, or interview tips.
+                    </div>
+                </div>
+                
+                <!-- Input Container -->
+                <div class="chatbot-input-container">
+                    <input type="text" id="chatbot-input" class="form-control" placeholder="Ask details (e.g., 'How to improve my experience section?')..." style="flex: 1;">
+                    <button id="chatbot-send-btn" class="btn btn-primary" style="padding: 12px 20px;">
+                        <i class="fa-solid fa-paper-plane"></i> Send
+                    </button>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Result script containing Chart.js configuration and Tabs logic -->
+<script>
+    // Tab switching logic
+    function switchTab(evt, tabId) {
+        // Get all elements with class="tab-content" and hide them
+        const tabcontents = document.querySelectorAll(".tab-content");
+        tabcontents.forEach(content => {
+            content.classList.remove("active");
+        });
+
+        // Get all elements with class="tab-btn" and remove the class "active"
+        const tabbtns = document.querySelectorAll(".tab-btn");
+        tabbtns.forEach(btn => {
+            btn.classList.remove("active");
+        });
+
+        // Show the current tab, and add an "active" class to the button that opened the tab
+        document.getElementById(tabId).classList.add("active");
+        evt.currentTarget.classList.add("active");
+    }
+
+    // Chart.js ATS Gauge configuration
+    document.addEventListener('DOMContentLoaded', () => {
+        const score = parseInt(document.getElementById('atsScoreValue').textContent) || 0;
+        const ctx = document.getElementById('atsChart').getContext('2d');
+        
+        let activeColor = '#ef4444'; // Red
+        if (score >= 80) {
+            activeColor = '#10b981'; // Green
+        } else if (score >= 60) {
+            activeColor = '#f59e0b'; // Yellow/Orange
+        }
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [score, 100 - score],
+                    backgroundColor: [activeColor, 'rgba(0,0,0,0.05)'],
+                    borderWidth: 0,
+                    borderRadius: [10, 0]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '80%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: false }
+                },
+                rotation: -90,
+                circumference: 360
+            }
+        });
+    });
+</script>
+<!-- Chatbot script file -->
+<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+{% endblock %}

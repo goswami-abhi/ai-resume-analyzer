@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Register - CVision Resume Analyzer{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: center; align-items: center; min-height: 75vh; padding: 2rem 20px;">
+    <div class="glass-panel" style="width: 100%; max-width: 480px; animation: fadeIn 0.5s ease-out;">
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <h2>Get <span class="gradient-text">Started</span></h2>
+            <p>Create a free account to unlock historical reports, job matching, and chatbot support.</p>
+        </div>
+        
+        <form method="POST" action="/register">
+            <div class="form-group">
+                <label for="username">USERNAME</label>
+                <input type="text" id="username" name="username" class="form-control" placeholder="johndoe" required autocomplete="username">
+            </div>
+            
+            <div class="form-group">
+                <label for="email">EMAIL ADDRESS</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="name@company.com" required autocomplete="email">
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 2rem;">
+                <label for="password">PASSWORD</label>
+                <div style="position: relative; display: flex; align-items: center;">
+                    <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required autocomplete="new-password" style="padding-right: 45px;">
+                    <button type="button" id="togglePassword" style="
+                        position: absolute;
+                        right: 12px;
+                        background: none;
+                        border: none;
+                        color: var(--text-secondary);
+                        cursor: pointer;
+                        font-size: 1.1rem;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 5px;
+                    " aria-label="Toggle Password Visibility">
+                        <i class="fa-solid fa-eye-slash" id="togglePasswordIcon"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1rem; margin-bottom: 1.5rem;">
+                <i class="fa-solid fa-user-plus"></i> Create Account
+            </button>
+        </form>
+        
+        <div style="text-align: center; font-size: 0.9rem; color: var(--text-secondary);">
+            Already have an account? <a href="/login" style="color: var(--secondary); text-decoration: none; font-weight: bold;">Log In</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    const togglePasswordIcon = document.getElementById('togglePasswordIcon');
+
+    if (togglePassword && passwordInput && togglePasswordIcon) {
+        togglePassword.addEventListener('click', () => {
+            const isPassword = passwordInput.getAttribute('type') === 'password';
+            passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+            togglePasswordIcon.classList.toggle('fa-eye');
+            togglePasswordIcon.classList.toggle('fa-eye-slash');
+        });
+    }
+</script>
+{% endblock %}

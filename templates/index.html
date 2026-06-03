@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}AI Resume Analyzer - Instantly Optimize Your Resume{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="hero-text" style="animation: fadeIn 0.8s ease-out;">
+        <h1>Unleash Your <br><span class="gradient-text">Career Potential</span> with AI</h1>
+        <p>Upload your resume to receive an immediate ATS score evaluation, comprehensive skill gap analysis, structural feedback, and career suggestions powered by advanced LLMs.</p>
+        <div class="hero-buttons">
+            {% if current_user.is_authenticated %}
+                <a href="/upload" class="btn btn-primary"><i class="fa-solid fa-cloud-arrow-up"></i> Analyze Your Resume</a>
+                <a href="/dashboard" class="btn btn-secondary"><i class="fa-solid fa-chart-line"></i> View History</a>
+            {% else %}
+                <a href="/register" class="btn btn-primary"><i class="fa-solid fa-rocket"></i> Get Started Free</a>
+                <a href="/login" class="btn btn-secondary">Login to Account</a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="hero-visual" style="animation: fadeIn 1.2s ease-out;">
+        <div class="hero-glow-circle"></div>
+        <div class="hero-card">
+            <span class="hero-card-score">ATS: 84%</span>
+            <div class="hero-card-header">
+                <div class="hero-card-avatar"></div>
+                <div style="flex: 1;">
+                    <div class="hero-card-line short" style="background: var(--text-primary);"></div>
+                    <div class="hero-card-line short"></div>
+                </div>
+            </div>
+            <div class="hero-card-line"></div>
+            <div class="hero-card-line medium"></div>
+            <div class="hero-card-line"></div>
+            <div class="hero-card-line short" style="background: var(--primary);"></div>
+            <div style="margin-top: 25px; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.85rem; color: var(--success); font-weight: bold;"><i class="fa-solid fa-check-double"></i> 14 Matches</span>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">Recommended Role: Full Stack</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div style="padding: 5rem 5%; max-width: 1200px; margin: 0 auto;">
+    <div style="text-align: center; margin-bottom: 4rem;">
+        <h2 style="font-size: 2.5rem;"><span class="gradient-text">State-Of-The-Art</span> Core Features</h2>
+        <p style="max-width: 600px; margin: 0 auto;">Get instant insights on content structure, formatting errors, and matching indicators for target jobs.</p>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+        <div class="glass-card">
+            <div style="font-size: 2rem; color: var(--primary); margin-bottom: 15px;"><i class="fa-solid fa-gauge-high"></i></div>
+            <h3>ATS Scoring Meter</h3>
+            <p>Compute dynamic ATS scores utilizing parsing checks, formatting guidelines, and industry resume configurations.</p>
+        </div>
+        
+        <div class="glass-card">
+            <div style="font-size: 2rem; color: var(--secondary); margin-bottom: 15px;"><i class="fa-solid fa-brain"></i></div>
+            <h3>AI Feedback System</h3>
+            <p>Obtain clear feedback identifying grammatical errors, structural design flaws, and content enhancement areas.</p>
+        </div>
+        
+        <div class="glass-card">
+            <div style="font-size: 2rem; color: var(--accent); margin-bottom: 15px;"><i class="fa-solid fa-bullseye"></i></div>
+            <h3>Job Matching & Skill Gap</h3>
+            <p>Paste a job description to cross-reference and map missing skills, technical gaps, and critical industry alignment.</p>
+        </div>
+        
+        <div class="glass-card">
+            <div style="font-size: 2rem; color: var(--success); margin-bottom: 15px;"><i class="fa-solid fa-comments"></i></div>
+            <h3>AI Chatbot Coach</h3>
+            <p>Chat directly with our career coach to explore interview prep tips, resume questions, and profile optimizations.</p>
+        </div>
+        
+        <div class="glass-card">
+            <div style="font-size: 2rem; color: var(--warning); margin-bottom: 15px;"><i class="fa-solid fa-history"></i></div>
+            <h3>Comprehensive History</h3>
+            <p>Revisit past analyses, track metric progressions, and update resumes over time via your personal user dashboard.</p>
+        </div>
+        
+        <div class="glass-card">
+            <div style="font-size: 2rem; color: var(--danger); margin-bottom: 15px;"><i class="fa-solid fa-file-pdf"></i></div>
+            <h3>PDF Report Export</h3>
+            <p>Generate clean, exportable PDF summaries to archive your resume reviews offline or share with coaches.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Steps to check -->
+<div style="background: var(--bg-accent); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 5rem 5%;">
+    <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 3rem; text-align: center;">
+        <div>
+            <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-weight: 800; font-size: 1.2rem;">1</div>
+            <h3>Upload PDF/DOCX</h3>
+            <p>Simply drag and drop your document file directly into our parser.</p>
+        </div>
+        <div>
+            <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--primary-light); color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-weight: 800; font-size: 1.2rem;">2</div>
+            <h3>Provide Job Target</h3>
+            <p>Optionally supply target descriptions to analyze your alignment details.</p>
+        </div>
+        <div>
+            <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--primary-subtle); color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-weight: 800; font-size: 1.2rem;">3</div>
+            <h3>Review Analytics</h3>
+            <p>Inspect detailed score indicators, download PDF plans, or prompt the chatbot coach.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
