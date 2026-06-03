@@ -254,12 +254,17 @@
             activeColor = '#f59e0b'; // Yellow/Orange
         }
 
-        new Chart(ctx, {
+        function getTrackColor() {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            return isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
+        }
+
+        const atsChart = new Chart(ctx, {
             type: 'doughnut',
             data: {
                 datasets: [{
                     data: [score, 100 - score],
-                    backgroundColor: [activeColor, 'rgba(0,0,0,0.05)'],
+                    backgroundColor: [activeColor, getTrackColor()],
                     borderWidth: 0,
                     borderRadius: [10, 0]
                 }]
@@ -275,6 +280,12 @@
                 rotation: -90,
                 circumference: 360
             }
+        });
+
+        // Listen for theme changes to update the chart colors dynamically
+        window.addEventListener('themechanged', (e) => {
+            atsChart.data.datasets[0].backgroundColor[1] = getTrackColor();
+            atsChart.update();
         });
     });
 </script>

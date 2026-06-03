@@ -32,6 +32,28 @@
     --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+[data-theme="dark"] {
+    --bg-main: #0b0f19;       /* Dark slate background */
+    --bg-surface: #111827;    /* Slate-900 background */
+    --bg-accent: #1e1b4b;     /* Deep Indigo accent */
+    --border-color: #1f2937;  /* Slate-800 borders */
+    --border-color-hover: #374151; /* Slate-700 borders */
+    
+    --primary: #6366f1;       /* Lighten Indigo for dark theme */
+    --primary-light: #818cf8;
+    --primary-subtle: #a5b4fc;
+    --primary-bg: rgba(99, 102, 241, 0.1);
+    
+    --text-primary: #f9fafb;   /* Off-white */
+    --text-secondary: #e5e7eb; /* Light grey */
+    --text-muted: #9ca3af;     /* Medium grey */
+    
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+    --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -149,6 +171,13 @@ p {
     font-weight: 800;
 }
 
+.nav-container {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-left: auto;
+}
+
 .nav-links {
     display: flex;
     align-items: center;
@@ -195,6 +224,48 @@ p {
 
 .nav-btn-primary:hover {
     background: var(--primary-light);
+}
+
+/* Theme Toggle Button styling */
+.theme-toggle-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 1.15rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border-radius: 50%;
+    transition: var(--transition-smooth);
+}
+
+.theme-toggle-btn:hover {
+    background: var(--primary-bg);
+    color: var(--primary) !important;
+    transform: scale(1.05);
+}
+
+.theme-toggle-btn:active {
+    transform: scale(0.95);
+}
+
+/* Dark Theme Specific Overrides */
+[data-theme="dark"] .history-table th {
+    background: #111827 !important;
+}
+
+[data-theme="dark"] .history-table tr:hover td {
+    background: #1f2937 !important;
+}
+
+[data-theme="dark"] .gap-table th {
+    background: #111827 !important;
+}
+
+[data-theme="dark"] .loading-overlay {
+    background: rgba(11, 15, 25, 0.95) !important;
 }
 
 .menu-toggle {
@@ -623,7 +694,13 @@ p {
     position: relative;
     width: 180px;
     height: 180px;
-    margin-bottom: 1.5rem;
+    margin: 0 auto 1.5rem auto;
+}
+
+.chart-container canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
 }
 
 .score-text {

@@ -12,6 +12,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Apply theme early to prevent flash
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
 </head>
 <body>
 
@@ -22,26 +27,32 @@
             <span>CVision</span>
         </a>
         
+        <div class="nav-container">
+            <ul class="nav-links" id="nav-links">
+                <li><a href="/" class="{% if request.path == '/' %}active{% endif %}">Home</a></li>
+                {% if current_user.is_authenticated %}
+                    <li><a href="/upload" class="{% if request.path == '/upload' %}active{% endif %}">Analyze Resume</a></li>
+                    <li><a href="/dashboard" class="{% if request.path == '/dashboard' %}active{% endif %}">Dashboard</a></li>
+                    {% if current_user.role == 'admin' %}
+                        <li><a href="/admin" class="{% if request.path == '/admin' %}active{% endif %}">Admin</a></li>
+                    {% endif %}
+                    <li><a href="/logout" class="nav-btn nav-btn-outline">Logout</a></li>
+                {% else %}
+                    <li><a href="/login" class="nav-btn nav-btn-outline">Login</a></li>
+                    <li><a href="/register" class="nav-btn nav-btn-primary">Get Started</a></li>
+                {% endif %}
+            </ul>
+            
+            <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle Theme">
+                <i class="fa-solid fa-moon" id="theme-icon"></i>
+            </button>
+        </div>
+
         <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Navigation">
             <span></span>
             <span></span>
             <span></span>
         </button>
-
-        <ul class="nav-links" id="nav-links">
-            <li><a href="/" class="{% if request.path == '/' %}active{% endif %}">Home</a></li>
-            {% if current_user.is_authenticated %}
-                <li><a href="/upload" class="{% if request.path == '/upload' %}active{% endif %}">Analyze Resume</a></li>
-                <li><a href="/dashboard" class="{% if request.path == '/dashboard' %}active{% endif %}">Dashboard</a></li>
-                {% if current_user.role == 'admin' %}
-                    <li><a href="/admin" class="{% if request.path == '/admin' %}active{% endif %}">Admin</a></li>
-                {% endif %}
-                <li><a href="/logout" class="nav-btn nav-btn-outline">Logout</a></li>
-            {% else %}
-                <li><a href="/login" class="nav-btn nav-btn-outline">Login</a></li>
-                <li><a href="/register" class="nav-btn nav-btn-primary">Get Started</a></li>
-            {% endif %}
-        </ul>
     </nav>
 
     <!-- Flash Messages -->
@@ -99,6 +110,38 @@
             menuToggle.addEventListener('click', () => {
                 menuToggle.classList.toggle('active');
                 navLinks.classList.toggle('active');
+            });
+        }
+
+        // Theme Toggle Logic
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+
+        function updateThemeIcon(theme) {
+            if (theme === 'dark') {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            } else {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+            }
+        }
+
+        // Initialize icon state
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+        updateThemeIcon(currentTheme);
+
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                const activeTheme = document.documentElement.getAttribute('data-theme') || 'light';
+                const nextTheme = activeTheme === 'dark' ? 'light' : 'dark';
+                
+                document.documentElement.setAttribute('data-theme', nextTheme);
+                localStorage.setItem('theme', nextTheme);
+                updateThemeIcon(nextTheme);
+
+                // Dispatch event so scripts (like Chart.js) can react to theme changes if needed
+                window.dispatchEvent(new CustomEvent('themechanged', { detail: nextTheme }));
             });
         }
     </script>
